@@ -35,6 +35,8 @@ namespace TileSliderPuzzle
             fValue = 0;
         }
 
+        
+
         public override string ToString()
         {
             string result = " _____________\n";

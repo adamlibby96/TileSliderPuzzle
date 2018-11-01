@@ -6,18 +6,20 @@ namespace TileSliderPuzzle
 {
     class Game
     {
-        Board start;
+        Board currentBoard;
         Board goal;
+
+        
 
         public Game(char[] startBoard, char[] goalBoard)
         {
-            start = new Board(startBoard);
+            currentBoard = new Board(startBoard);
             goal = new Board(goalBoard);
         }
 
         public void displayStart()
         {
-            Console.WriteLine("\n    START\n" + start.ToString());
+            Console.WriteLine("\n    START\n" + currentBoard.ToString());
         }
 
         public void displayGoal()
