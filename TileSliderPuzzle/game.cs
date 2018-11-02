@@ -14,7 +14,9 @@ namespace TileSliderPuzzle
         public Game(char[] startBoard, char[] goalBoard)
         {
             currentBoard = new Board(startBoard);
+            currentBoard.setGoal(goalBoard);
             goal = new Board(goalBoard);
+
         }
 
         public void displayStart()

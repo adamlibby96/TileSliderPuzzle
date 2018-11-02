@@ -7,6 +7,8 @@ namespace TileSliderPuzzle
     {
         static void Main(string[] args)
         {
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.Green;
             // dynamic stuff
             //int m = getM();
             //int n = getN();
