@@ -22,7 +22,7 @@ namespace TileSliderPuzzle
             value = -999;
             neighbors = new Dictionary<Moves, Node>();
         }
-        #region gettersAndSetters
+#region gettersAndSetters
         public void setPosition(Point pos)
         {
             currentPosition = pos;
@@ -41,8 +41,8 @@ namespace TileSliderPuzzle
 
         public void setGoalPosition(int x, int y)
         {
-            currentPosition.x = x;
-            currentPosition.y = y;
+            goalPosition.x = x;
+            goalPosition.y = y;
         }
 
         public Point getCurrentPosition()
@@ -66,10 +66,109 @@ namespace TileSliderPuzzle
         }
         #endregion
 
-        public Node[] getNeighbors()
+        public Dictionary<Moves, Node> GetNeighbors(List<Node> board)
         {
+            neighbors = new Dictionary<Moves, Node>();
+
+            Point right = new Point();
+            Point up = new Point();
+            Point down = new Point();
+            Point left = new Point();
+
+            right.x = currentPosition.x + 1;
+            right.y = currentPosition.y;
+
+            up.x = currentPosition.x;
+            up.y = currentPosition.y - 1;
+
+            down.x = currentPosition.x;
+            down.y = currentPosition.y + 1;
+
+            left.x = currentPosition.x - 1;
+            left.y = currentPosition.y;
+
+            Console.WriteLine("Value: " + value);
+            Console.WriteLine("Left: " + left.x + ", " + left.y);
+            Console.WriteLine("Up: " + up.x + ", " + up.y);
+            Console.WriteLine("Right: " + right.x + ", " + right.y);
+            Console.WriteLine("Down: " + down.x + ", " + down.y + "\n");
+
+
+            foreach (Node n in board)
+            {
+                if (n.currentPosition == right)
+                {
+                    neighbors.Add(Moves.Right, n);
+                } else if (n.currentPosition == left)
+                {
+                    neighbors.Add(Moves.Left, n);
+                } else if (n.currentPosition == up)
+                {
+                    neighbors.Add(Moves.Up, n);
+                } else if (n.currentPosition == down)
+                {
+                    neighbors.Add(Moves.Down, n);
+                }
+            }
+            /**
+            switch (currentPosition.x)
+            {
+                case 0:
+                    if (currentPosition.y == 0) // if currentPosition is 0,0
+                    {
+                        
+                        foreach (Node n in board)
+                        {
+                            if (n.currentPosition.x == 1 && n.currentPosition.y == 0)
+                            {
+
+                                neighbors.Add(Moves.Right, n); 
+                                
+                            } else if (n.currentPosition.x == 0 && n.currentPosition.y == 1)
+                            {
+
+                                neighbors.Add(Moves.Down, n);
+                            }
+                        }
+                        
+                    } else if (currentPosition.y == 1) // if currentPosition is 0,1 
+                    {
+                        foreach (Node n in board)
+                        {
+                            if (n.currentPosition.x == 0 && n.currentPosition.y == 0)
+                            {
+                                neighbors.Add(Moves.Up, n);
+                            } else if (n.currentPosition.x == 1 && n.currentPosition.y == 1)
+                            {
+                                neighbors.Add(Moves.Right, n);
+                            } else if (n.currentPosition.x == 0 && n.currentPosition.y == 2)
+                            {
+                                neighbors.Add(Moves.Down, n);
+                            }
+                        }
+                    } else if (currentPosition.y == 2) // if currentPosition is 0,2
+                    {
+                        foreach (Node n in board)
+                        {
+                            if (n.currentPosition.x == 0 && n.currentPosition.y == 1)
+                            {
+                                neighbors.Add(Moves.Up, n);
+                            } else if (n.currentPosition.x == 1 && n.currentPosition.y == 2)
+                            {
+                                neighbors.Add(Moves.Right, n);
+                            }
+                        }
+                    } else // no neighbors which is bad
+                    {
+                        return null;
+                    }
+                    break;
+
+            }
+            **/
+
             // not implemented yet
-            return null;
+            return neighbors;
         }
 
         /******************************************* 

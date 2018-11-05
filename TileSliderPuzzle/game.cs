@@ -21,6 +21,8 @@ namespace TileSliderPuzzle
 
         public void displayStart()
         {
+            currentBoard.displayNeighborStuff();
+
             Console.WriteLine("\n    START\n" + currentBoard.ToString());
         }
 

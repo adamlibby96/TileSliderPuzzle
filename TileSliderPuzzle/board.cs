@@ -33,7 +33,6 @@ namespace TileSliderPuzzle
                 }
             }
 
-
             pred = null;
             gValue = 0;
             hValue = 0;
@@ -53,11 +52,26 @@ namespace TileSliderPuzzle
                         if (node.getValue() == val)
                         {
                             node.setGoalPosition(row, col);
-                            Console.WriteLine("found " + node.getValue() + " at: " + node.getGoalPosition());
+                            //Console.WriteLine("found " + node.getValue() + " at: " + row + "," + col);
                         }
                     }
                     index++;
                 }
+            }
+        }
+
+        public void displayNeighborStuff()
+        {
+            // testing of getNeighbors
+            foreach (Node n in currentBoard)
+            {
+                Dictionary<Moves, Node> neighbors = new Dictionary<Moves, Node>();
+                neighbors = n.GetNeighbors(currentBoard);
+                foreach (KeyValuePair<Moves, Node> pair in neighbors)
+                {
+                    Console.Write(n.getValue() + ": " + pair.Key + "- " + pair.Value.getValue() + ",  ");
+                }
+                Console.WriteLine();
             }
         }
 
@@ -69,7 +83,7 @@ namespace TileSliderPuzzle
             {
                 for (int j = 0; j < colSize; j++)
                 {
-                    result += " | " + currentBoard[index].getValue() + "// goal: " + currentBoard[index].getGoalPosition();
+                    result += " | " + currentBoard[index].getValue();// + "// goal: " + currentBoard[index].getGoalPosition();
                     index++;
                 }
                 result += " |\n _____________\n";
