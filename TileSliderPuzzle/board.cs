@@ -43,7 +43,17 @@ namespace TileSliderPuzzle
         {
             currentBoard = board;
             pred = parent;
+            gValue = parent.gValue + 1;
+        }
 
+        public void evaluate()
+        {
+            foreach (Node n in currentBoard)
+            {
+                // h = distance + # of tiles in the way 
+            }
+
+            float f = gValue + hValue;
         }
 
         public List<Node> getBoard()
@@ -54,6 +64,11 @@ namespace TileSliderPuzzle
                 temp.Add(currentBoard[i]);
             }
             return temp;
+        }
+
+        public float getHeuristic()
+        {
+            return hValue;
         }
 
         public void setGoal(char[] goal)

@@ -22,7 +22,10 @@ namespace TileSliderPuzzle
         public void Solve()
         {
             generateChildren(currentBoard);
+
+
             int childCount = children.Count;
+            // testing purposes
             for (int i = 0; i < childCount; i++)
             {
                 Console.WriteLine("Children "+ i + " children: \n");
