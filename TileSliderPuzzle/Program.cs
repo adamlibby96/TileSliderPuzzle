@@ -28,6 +28,10 @@ namespace TileSliderPuzzle
             char[] goalBoard = goal.ToCharArray();
             Game game = new Game(startBoard, goalBoard);
             game.displayStart();
+
+            game.Solve();
+
+
             game.displayGoal();
             
             // pause the program to make sure it doesnt close

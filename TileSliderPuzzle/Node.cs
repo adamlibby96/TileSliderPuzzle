@@ -22,6 +22,16 @@ namespace TileSliderPuzzle
             value = -999;
             neighbors = new Dictionary<Moves, Node>();
         }
+
+        public Node(Node node)
+        {
+            isFinished = node.isFinished;
+            currentPosition = node.currentPosition;
+            goalPosition = node.goalPosition;
+            distance = node.distance;
+            value = node.value;
+            neighbors = node.neighbors;
+        }
 #region gettersAndSetters
         public void setPosition(Point pos)
         {
@@ -87,11 +97,11 @@ namespace TileSliderPuzzle
             left.x = currentPosition.x - 1;
             left.y = currentPosition.y;
 
-            Console.WriteLine("Value: " + value);
-            Console.WriteLine("Left: " + left.x + ", " + left.y);
-            Console.WriteLine("Up: " + up.x + ", " + up.y);
-            Console.WriteLine("Right: " + right.x + ", " + right.y);
-            Console.WriteLine("Down: " + down.x + ", " + down.y + "\n");
+            //Console.WriteLine("Value: " + value);
+            //Console.WriteLine("Left: " + left.x + ", " + left.y);
+            //Console.WriteLine("Up: " + up.x + ", " + up.y);
+            //Console.WriteLine("Right: " + right.x + ", " + right.y);
+            //Console.WriteLine("Down: " + down.x + ", " + down.y + "\n");
 
 
             foreach (Node n in board)
@@ -110,64 +120,7 @@ namespace TileSliderPuzzle
                     neighbors.Add(Moves.Down, n);
                 }
             }
-            /**
-            switch (currentPosition.x)
-            {
-                case 0:
-                    if (currentPosition.y == 0) // if currentPosition is 0,0
-                    {
-                        
-                        foreach (Node n in board)
-                        {
-                            if (n.currentPosition.x == 1 && n.currentPosition.y == 0)
-                            {
 
-                                neighbors.Add(Moves.Right, n); 
-                                
-                            } else if (n.currentPosition.x == 0 && n.currentPosition.y == 1)
-                            {
-
-                                neighbors.Add(Moves.Down, n);
-                            }
-                        }
-                        
-                    } else if (currentPosition.y == 1) // if currentPosition is 0,1 
-                    {
-                        foreach (Node n in board)
-                        {
-                            if (n.currentPosition.x == 0 && n.currentPosition.y == 0)
-                            {
-                                neighbors.Add(Moves.Up, n);
-                            } else if (n.currentPosition.x == 1 && n.currentPosition.y == 1)
-                            {
-                                neighbors.Add(Moves.Right, n);
-                            } else if (n.currentPosition.x == 0 && n.currentPosition.y == 2)
-                            {
-                                neighbors.Add(Moves.Down, n);
-                            }
-                        }
-                    } else if (currentPosition.y == 2) // if currentPosition is 0,2
-                    {
-                        foreach (Node n in board)
-                        {
-                            if (n.currentPosition.x == 0 && n.currentPosition.y == 1)
-                            {
-                                neighbors.Add(Moves.Up, n);
-                            } else if (n.currentPosition.x == 1 && n.currentPosition.y == 2)
-                            {
-                                neighbors.Add(Moves.Right, n);
-                            }
-                        }
-                    } else // no neighbors which is bad
-                    {
-                        return null;
-                    }
-                    break;
-
-            }
-            **/
-
-            // not implemented yet
             return neighbors;
         }
 

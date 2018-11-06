@@ -26,7 +26,7 @@ namespace TileSliderPuzzle
                 for (int col = 0; col < colSize; col++)
                 {
                     Node temp = new Node();
-                    temp.setPosition(row, col);
+                    temp.setPosition(col, row);
                     temp.setValue((int) char.GetNumericValue(board[index]));
                     index++;
                     currentBoard.Add(temp);
@@ -37,7 +37,24 @@ namespace TileSliderPuzzle
             gValue = 0;
             hValue = 0;
             fValue = 0;
-        }       
+        }
+        
+        public Board(List<Node> board, Board parent)
+        {
+            currentBoard = board;
+            pred = parent;
+
+        }
+
+        public List<Node> getBoard()
+        {
+            List<Node> temp = new List<Node>();
+            for (int i = 0; i < currentBoard.Count; i++)
+            {
+                temp.Add(currentBoard[i]);
+            }
+            return temp;
+        }
 
         public void setGoal(char[] goal)
         {
@@ -60,6 +77,22 @@ namespace TileSliderPuzzle
             }
         }
 
+        public Dictionary<Moves, Node> getPossibleMoves()
+        {
+            Dictionary<Moves, Node> neighbors = new Dictionary<Moves, Node>();
+
+            foreach (Node n in currentBoard)
+            {
+                if (n.getValue() == -1) // if it is the star
+                {
+                    neighbors = n.GetNeighbors(currentBoard);
+                    break;
+                }
+            }
+
+            return neighbors;
+        }
+
         public void displayNeighborStuff()
         {
             // testing of getNeighbors
@@ -77,17 +110,28 @@ namespace TileSliderPuzzle
 
         public override string ToString()
         {
-            int index = 0;
             string result = " _____________\n";
-            for (int i = 0; i < rowSize; i++)
+
+            for (int y = 0; y < 3; y++)
             {
-                for (int j = 0; j < colSize; j++)
+                for (int x = 0; x < 3; x++)
                 {
-                    result += " | " + currentBoard[index].getValue();// + "// goal: " + currentBoard[index].getGoalPosition();
-                    index++;
+                    Point curPoint = new Point();
+                    curPoint.x = x;
+                    curPoint.y = y;
+                    Node temp = currentBoard.Find(n => n.getCurrentPosition() == curPoint);
+                    if (temp.getValue() < 0)
+                    {
+                        result += " | *";
+                    }
+                    else
+                    {
+                        result += " | " + temp.getValue();
+                    }
                 }
                 result += " |\n _____________\n";
             }
+            
             return result;
         }
     }
