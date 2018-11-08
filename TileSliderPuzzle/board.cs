@@ -17,6 +17,15 @@ namespace TileSliderPuzzle
         private int rowSize = 3;
         private int colSize = 3;
 
+        public Board()
+        {
+            currentBoard = new List<Node>();
+            pred = new Board();
+            gValue = 0;
+            hValue = 0;
+            fValue = 0;
+        }
+
         public Board(char[] board)
         {
             // init currentBoard;
@@ -66,7 +75,7 @@ namespace TileSliderPuzzle
             {
                 // h = distance + # of tiles in the way -- maybe eventually
 
-                fValue = n.getDistanceToGoal();
+                fValue += n.getDistanceToGoal();
                 Node goalPos = currentBoard.Find(temp => temp.getCurrentPosition() == n.getGoalPosition());
                 if (goalPos.getValue() != -1)
                 {
@@ -153,6 +162,28 @@ namespace TileSliderPuzzle
                 }
                 Console.WriteLine();
             }
+        }
+
+        public bool areTheseBoardsEqual(List<Node> a, List<Node> b)
+        {
+            for (int row = 0; row < 3; row++)
+            {
+                for (int col = 0; col < 3; col++)
+                {
+                    Point curPoint = new Point();
+                    curPoint.x = col;
+                    curPoint.y = row;
+
+                    Node tempA = a.Find(x => x.getCurrentPosition() == curPoint);
+                    Node tempB = b.Find(x => x.getCurrentPosition() == curPoint);
+
+                    if (tempA.getValue() != tempB.getValue())
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         public override string ToString()

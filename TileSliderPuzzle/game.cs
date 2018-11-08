@@ -10,9 +10,11 @@ namespace TileSliderPuzzle
         Board goal;
         List<Board> children;
         Stack<Moves> history;
+        List<Board> closedList;
 
         public Game(char[] startBoard, char[] goalBoard)
         {
+            closedList = new List<Board>();
             history = new Stack<Moves>();
             currentBoard = new Board(startBoard);
             currentBoard.setGoal(goalBoard);
@@ -55,6 +57,50 @@ namespace TileSliderPuzzle
             return currentBoard.isComplete();
         }
 
+        public void autoSolveV2()
+        {
+            // generate first set of children
+            generateChildren(currentBoard);
+
+            bool solved = false;
+            while (!solved)
+            {
+                // test children for lowest h value
+                Board lowest = null;
+                int lowestH = 1000;
+                for (int i = 0; i < children.Count; i++)
+                {
+                    int h = children[i].getHeuristic();
+                    if (h < lowestH)
+                    {
+                        lowestH = h;
+                        lowest = children[i]; // save lowest board
+                    }
+                }
+
+                if (lowest != null)
+                {
+                    // add lowest to the close list
+                    closedList.Add(lowest);
+                    // save the move
+                    history.Push(lowest.moveToGetHere);
+                }
+                else
+                {
+                    Console.WriteLine("Error: could not find lowest board");
+                    return;
+                }
+
+                solved = lowest.isComplete();
+
+                Console.WriteLine("Moved: " + lowest.moveToGetHere + ";\n" + lowest.ToString());
+
+                generateChildren(lowest);
+                Console.ReadKey();
+                Console.Clear();
+            }
+        }
+
         public void AutoSolve()
         {
             generateChildren(currentBoard);  
@@ -70,6 +116,7 @@ namespace TileSliderPuzzle
                         index = i;
                         lowestVal = h;
                     }
+                    Console.WriteLine("Board: " + i + "; Heuristic: " + children[i].getHeuristic() + "\n" + children[i].ToString());
                 }
 
                 if (lowestVal > 100)
@@ -77,11 +124,19 @@ namespace TileSliderPuzzle
                     Console.WriteLine("ERROR: something happened when finding lowest heuristic!");
                     return;
                 }
-
-                currentBoard = children[index];
-                Console.WriteLine("Move: " + currentBoard.moveToGetHere + "\n" + currentBoard.ToString() + "\n");
-                history.Push(currentBoard.moveToGetHere);
-                generateChildren(currentBoard);
+                if (!closedList.Contains(children[index]))
+                {
+                    closedList.Add(children[index]);
+                    currentBoard = children[index];
+                    Console.WriteLine("Move: " + currentBoard.moveToGetHere + "\n" + currentBoard.ToString() + "\n");
+                    history.Push(currentBoard.moveToGetHere);
+                    generateChildren(currentBoard);
+                } else
+                {
+                    Console.WriteLine("Already been to this board");
+                    children.Remove(children[index]);
+                }
+                
 
             }
         }
@@ -165,7 +220,24 @@ namespace TileSliderPuzzle
 
                 Board tempBoard = new Board(tempChild, curBoard);
                 tempBoard.moveToGetHere = pair.Key;
-                children.Add(tempBoard);
+
+                bool isfound = false;
+                if (closedList.Count > 0)
+                {
+                   
+                    foreach(Board board in closedList)
+                    {
+                        if (tempBoard.areTheseBoardsEqual(tempBoard.getBoard(), board.getBoard()))
+                        {
+                            // if we are in here, we have been to the board state before, so we dont add it to the list
+                            isfound = true;
+                        }
+                    }
+                }
+                if (!isfound)
+                {
+                    children.Add(tempBoard);
+                }
                 
                 //switch (pair.Key)
                 //{

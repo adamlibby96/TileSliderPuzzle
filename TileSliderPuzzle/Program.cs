@@ -33,7 +33,9 @@ namespace TileSliderPuzzle
 
             game.displayGoal();
 
-            game.AutoSolve();
+            game.autoSolveV2();
+
+            //game.AutoSolve();
 
             //game.ManualSolve();
 
