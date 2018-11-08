@@ -29,11 +29,14 @@ namespace TileSliderPuzzle
             Game game = new Game(startBoard, goalBoard);
             game.displayStart();
 
-            game.Solve();
-
+            
 
             game.displayGoal();
-            
+
+            game.AutoSolve();
+
+            //game.ManualSolve();
+
             // pause the program to make sure it doesnt close
             Console.ReadKey();
         }

@@ -12,6 +12,7 @@ namespace TileSliderPuzzle
         int gValue;
         int hValue;
         int fValue;
+        public Moves moveToGetHere { get; set; }
 
         private int rowSize = 3;
         private int colSize = 3;
@@ -46,15 +47,45 @@ namespace TileSliderPuzzle
             gValue = parent.gValue + 1;
         }
 
-        public void evaluate()
+        public bool isComplete()
+        {
+            foreach (Node cur in currentBoard)
+            {
+                
+                if (!cur.isAtGoalPosition())
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private void evaluate()
         {
             foreach (Node n in currentBoard)
             {
-                // h = distance + # of tiles in the way 
+                // h = distance + # of tiles in the way -- maybe eventually
+
+                fValue = n.getDistanceToGoal();
+                Node goalPos = currentBoard.Find(temp => temp.getCurrentPosition() == n.getGoalPosition());
+                if (goalPos.getValue() != -1)
+                {
+                    fValue++;
+                }
             }
 
-            float f = gValue + hValue;
+            hValue = gValue + fValue;
         }
+
+        //private int getTilesInNodePath(Node cur)
+        //{
+        //    int count = 0;
+        //    foreach (Node n in currentBoard)
+        //    {
+
+        //    }
+        //    return count;
+        //}
 
         public List<Node> getBoard()
         {
@@ -66,8 +97,9 @@ namespace TileSliderPuzzle
             return temp;
         }
 
-        public float getHeuristic()
+        public int getHeuristic()
         {
+            evaluate();
             return hValue;
         }
 
@@ -83,7 +115,7 @@ namespace TileSliderPuzzle
                     {
                         if (node.getValue() == val)
                         {
-                            node.setGoalPosition(row, col);
+                            node.setGoalPosition(col, row);
                             //Console.WriteLine("found " + node.getValue() + " at: " + row + "," + col);
                         }
                     }

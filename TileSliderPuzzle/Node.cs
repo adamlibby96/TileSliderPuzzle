@@ -97,13 +97,6 @@ namespace TileSliderPuzzle
             left.x = currentPosition.x - 1;
             left.y = currentPosition.y;
 
-            //Console.WriteLine("Value: " + value);
-            //Console.WriteLine("Left: " + left.x + ", " + left.y);
-            //Console.WriteLine("Up: " + up.x + ", " + up.y);
-            //Console.WriteLine("Right: " + right.x + ", " + right.y);
-            //Console.WriteLine("Down: " + down.x + ", " + down.y + "\n");
-
-
             foreach (Node n in board)
             {
                 if (n.currentPosition == right)
@@ -137,7 +130,7 @@ namespace TileSliderPuzzle
         ********************************************/
         public int getDistanceToGoal()
         {
-            int dist = (currentPosition.x - goalPosition.x) + (currentPosition.y - goalPosition.y);
+            int dist = Math.Abs((currentPosition.x - goalPosition.x)) + Math.Abs((currentPosition.y - goalPosition.y));
             if (dist == 0)
             {
                 isFinished = true;
@@ -151,7 +144,12 @@ namespace TileSliderPuzzle
 
         public bool isAtGoalPosition()
         {
-            return isFinished;
+            return currentPosition == goalPosition;
+        }
+
+        public override string ToString()
+        {
+            return this.value + ": at " + currentPosition.ToString() + ";\nGoal: " + goalPosition.ToString() + "\n";
         }
     }
 }
