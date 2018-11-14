@@ -20,6 +20,7 @@ namespace TileSliderPuzzle
             currentBoard.setGoal(goalBoard);
             goal = new Board(goalBoard);
             children = new List<Board>();
+            closedList.Add(currentBoard);
         }
 
         public void ManualSolve()
@@ -57,7 +58,7 @@ namespace TileSliderPuzzle
             return currentBoard.isComplete();
         }
 
-        public void autoSolveV2()
+        public void autoSolveNoBoardDisplay()
         {
             // generate first set of children
             generateChildren(currentBoard);
@@ -70,7 +71,7 @@ namespace TileSliderPuzzle
                 int lowestH = 1000;
                 for (int i = 0; i < children.Count; i++)
                 {
-                    int h = children[i].getHeuristic();
+                    int h = children[i].manHattenDist();
                     if (h < lowestH)
                     {
                         lowestH = h;
@@ -92,13 +93,79 @@ namespace TileSliderPuzzle
                 }
 
                 solved = lowest.isComplete();
+                //Console.WriteLine("Moved: " + lowest.moveToGetHere + ";\n" + lowest.ToString());
 
+                if (!solved)
+                {
+                    
+                    generateChildren(lowest);
+                    //System.Threading.Thread.Sleep(1000);
+                    //Console.ReadKey();
+                    //Console.Clear();
+                }
+            }
+            Console.WriteLine("\nAUTOSOLVED!\n");
+            displayMoves();
+        }
+
+        public void autoSolveWithWatching(int miliseconds)
+        {
+            // generate first set of children
+            generateChildren(currentBoard);
+
+            bool solved = false;
+            while (!solved)
+            {
+                // test children for lowest h value
+                Board lowest = null;
+                int lowestH = 1000;
+                for (int i = 0; i < children.Count; i++)
+                {
+                    int h = children[i].manHattenDist();
+                    if (h < lowestH)
+                    {
+                        lowestH = h;
+                        lowest = children[i]; // save lowest board
+                    }
+                }
+
+                if (lowest != null)
+                {
+                    // add lowest to the close list
+                    closedList.Add(lowest);
+                    // save the move
+                    history.Push(lowest.moveToGetHere);
+                }
+                else
+                {
+                    Console.WriteLine("Error: could not find lowest board");
+                    return;
+                }
+
+                solved = lowest.isComplete();
                 Console.WriteLine("Moved: " + lowest.moveToGetHere + ";\n" + lowest.ToString());
 
-                generateChildren(lowest);
-                Console.ReadKey();
-                Console.Clear();
+                if (!solved)
+                {
+
+                    generateChildren(lowest);
+                    System.Threading.Thread.Sleep(miliseconds);
+                    //Console.ReadKey();
+                    Console.Clear();
+                }
             }
+            Console.WriteLine("\nAUTOSOLVED!\n");
+            displayMoves();
+        }
+
+        private void displayMoves()
+        {
+            string output = "\n";
+            while (history.Count > 0)
+            {
+                output = flipMove(history.Pop()).ToString()[0] + " " + output;
+            }
+            Console.WriteLine("Moves: " + output);
         }
 
         public void AutoSolve()
@@ -202,8 +269,6 @@ namespace TileSliderPuzzle
             Dictionary<Moves, Node> moves = curBoard.getPossibleMoves();
             foreach (KeyValuePair<Moves, Node> pair in moves)
             {
-                //Console.WriteLine(pair.Value.getValue() + ": " + pair.Key.ToString() + ", " + pair.Value.getCurrentPosition());
-
                 List<Node> tempChild = curBoard.getBoard().ConvertAll(n => new Node(n));
                 Node blank = tempChild.Find(n => n.getValue() == -1); // get the blank node
                 Node tempNode = tempChild.Find(n => n.getValue() == pair.Value.getValue()); // get the node we are swapping

@@ -69,17 +69,33 @@ namespace TileSliderPuzzle
             return true;
         }
 
+        public int manHattenDist()
+        {
+            int result = 0;
+            foreach (Node n in currentBoard)
+            {
+                // h = distance + # of tiles in the way -- maybe eventually
+                if (n.getValue() != -1 && !n.isAtGoalPosition()) // ignore the * node and nodes that are completed
+                {
+                    result += n.getDistanceToGoal();
+                }
+            }
+            return result;
+        }
+
         private void evaluate()
         {
             foreach (Node n in currentBoard)
             {
                 // h = distance + # of tiles in the way -- maybe eventually
-
-                fValue += n.getDistanceToGoal();
-                Node goalPos = currentBoard.Find(temp => temp.getCurrentPosition() == n.getGoalPosition());
-                if (goalPos.getValue() != -1)
+                if (n.getValue() != -1 && !n.isAtGoalPosition()) // ignore the * node and nodes that are completed
                 {
-                    fValue++;
+                    fValue += n.getDistanceToGoal();
+                    Node goalPos = currentBoard.Find(temp => temp.getCurrentPosition() == n.getGoalPosition());
+                    if (goalPos.getValue() != -1)
+                    {
+                        fValue++;
+                    }
                 }
             }
 
@@ -108,8 +124,8 @@ namespace TileSliderPuzzle
 
         public int getHeuristic()
         {
-            evaluate();
-            return hValue;
+            //evaluate();
+            return manHattenDist() + gValue;
         }
 
         public void setGoal(char[] goal)

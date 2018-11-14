@@ -10,6 +10,7 @@ namespace TileSliderPuzzle
         Point goalPosition;
         int distance;
         int value;
+        int costToMove { get; set; }
         bool isFinished;
         Dictionary<Moves, Node> neighbors;
 
@@ -117,22 +118,12 @@ namespace TileSliderPuzzle
             return neighbors;
         }
 
-        /******************************************* 
-        * Function Name: getDistanceToGoal         *
-        * Parameters: Point goal                   *
-        * Description:                             *
-        *      this calculates the distance of     *
-        *      the current node's point to the     *
-        *      goal's point. If it is 0, it also   *
-        *      sets the bool isFinished to true    *
-        *      because it is in the correct        *
-        *      position                            *
-        ********************************************/
         public int getDistanceToGoal()
         {
             int dist = Math.Abs((currentPosition.x - goalPosition.x)) + Math.Abs((currentPosition.y - goalPosition.y));
             if (dist == 0)
             {
+                //costToMove = 10;
                 isFinished = true;
             } else
             {

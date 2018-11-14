@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace TileSliderPuzzle
@@ -17,23 +18,55 @@ namespace TileSliderPuzzle
             int m = 3;
             int n = 3;
 
+            bool customWatch = false;
+            int waitTime = 1000; // default 1 second
+            Console.WriteLine("Do you want to watch it being solved? (y/n)");
+            char[] watchIt = Console.ReadLine().ToCharArray();
+            if (watchIt[0] == 'y' || watchIt[0] == 'Y')
+            {
+                Console.WriteLine("Enter the time between moves. (in milliseconds)");
+                waitTime = int.Parse(Console.ReadLine());
+                customWatch = true;
+            }
+
 
             char[,] board = new char[m, n];
 
-            //string currentBoardInput = getInput(); dont delete!!!!!!!!!!! this is the real input method
-            //string goalInput = getGoalBoard(); 
-            string testingInput = "5*2143786";
-            string goal = "12345678*";
-            char[] startBoard = testingInput.ToCharArray();
-            char[] goalBoard = goal.ToCharArray();
-            Game game = new Game(startBoard, goalBoard);
-            game.displayStart();
-
+                ////testing input
+                //string testingInput = "5*2143786";
+                //string goal = "12345678*";
+                //char[] startBoard = testingInput.ToCharArray();
+                //char[] goalBoard = goal.ToCharArray();
             
+
+                //user input
+                string currentBoardInput = getInput();
+                string goalInput = getGoalBoard();
+                char[] startBoard = currentBoardInput.ToCharArray();
+                char[] goalBoard = goalInput.ToCharArray();
+           
+            Game game = new Game(startBoard, goalBoard);
+
+            game.displayStart();
 
             game.displayGoal();
 
-            game.autoSolveV2();
+            Stopwatch stopwatch = new Stopwatch();
+            if (customWatch)
+            {
+                System.Threading.Thread.Sleep(waitTime);
+                Console.Clear();
+                stopwatch.Start();
+                game.autoSolveWithWatching(waitTime);
+                stopwatch.Stop();
+            }
+            else
+            {
+                stopwatch.Start();
+                game.autoSolveNoBoardDisplay();
+                stopwatch.Stop();
+            }
+            Console.WriteLine("\nCompleted in " + stopwatch.ElapsedMilliseconds + " milliseconds!");
 
             //game.AutoSolve();
 
@@ -83,9 +116,9 @@ namespace TileSliderPuzzle
             Console.WriteLine("Enter current board: ");
             Console.Write("Top Row: ");
             input += Console.ReadLine();
-            Console.Write("\nMiddle Row: ");
+            Console.Write("Middle Row: ");
             input += Console.ReadLine();
-            Console.Write("\nBottom Row: ");
+            Console.Write("Bottom Row: ");
             input += Console.ReadLine();
 
             return input;
@@ -93,14 +126,14 @@ namespace TileSliderPuzzle
 
         static string getGoalBoard()
         {
-            string input = "\n";
+            string input = "";
 
-            Console.WriteLine("Enter goal board: ");
+            Console.WriteLine("\nEnter goal board: ");
             Console.Write("Top Row: ");
             input += Console.ReadLine();
-            Console.Write("\nMiddle Row: ");
+            Console.Write("Middle Row: ");
             input += Console.ReadLine();
-            Console.Write("\nBottom Row: ");
+            Console.Write("Bottom Row: ");
             input += Console.ReadLine();
 
             return input;
