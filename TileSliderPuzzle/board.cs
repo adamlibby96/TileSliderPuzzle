@@ -1,4 +1,11 @@
-﻿using System;
+﻿/**
+ * Written by: Adam Libby
+ * Written For: AI assignment 
+ *          (Tile Sliding Puzzle using A* Algorithm)
+ * Date completed: November 18th 2018
+**/
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,17 +13,24 @@ namespace TileSliderPuzzle
 {
     class Board
     {
-        //char[,] currentBoard;
+        // The current Game board
         List<Node> currentBoard;
+        // the parent game board
         Board pred;
+        // the g value (how far down the tree we are)
         int gValue;
-        int hValue;
+        // the cost to move to this board
+        public int hValue { get; set; }
+        // f = h + g
         int fValue;
+        // what move did we take to get to this board
         public Moves moveToGetHere { get; set; }
 
+        // the size of the board
         private int rowSize = 3;
         private int colSize = 3;
 
+        // default constructor
         public Board()
         {
             currentBoard = new List<Node>();
@@ -26,6 +40,11 @@ namespace TileSliderPuzzle
             fValue = 0;
         }
 
+        /* Function: Board constructor 
+         *      Params: char array 
+         *      Use: convert char array to a list of nodes and init the board with default values
+         *      Return: none
+        */
         public Board(char[] board)
         {
             // init currentBoard;
@@ -48,7 +67,12 @@ namespace TileSliderPuzzle
             hValue = 0;
             fValue = 0;
         }
-        
+
+        /* Function: Board constructor
+         *      Params: list of nodes: board, and the boards parent board
+         *      Use: create a new board and assign the pred to the parent 
+         *      Return: none
+        */
         public Board(List<Node> board, Board parent)
         {
             currentBoard = board;
@@ -56,11 +80,15 @@ namespace TileSliderPuzzle
             gValue = parent.gValue + 1;
         }
 
+        /* Function: isComplete
+         *      Params: none
+         *      Use: check and see if every node is in their goal spot
+         *      Return: bool: true if the board is the goal; false otherwise
+        */
         public bool isComplete()
         {
             foreach (Node cur in currentBoard)
             {
-                
                 if (!cur.isAtGoalPosition())
                 {
                     return false;
@@ -69,12 +97,17 @@ namespace TileSliderPuzzle
             return true;
         }
 
+        /* Function: manHattenDist
+         *      Params: none
+         *      Use: calculate the manHatten distance of each node, and 
+         *              sum them all up for the heuristic value
+         *      Return: int: heuristic value of the current board
+        */
         public int manHattenDist()
         {
             int result = 0;
             foreach (Node n in currentBoard)
             {
-                // h = distance + # of tiles in the way -- maybe eventually
                 if (n.getValue() != -1 && !n.isAtGoalPosition()) // ignore the * node and nodes that are completed
                 {
                     result += n.getDistanceToGoal();
@@ -83,35 +116,111 @@ namespace TileSliderPuzzle
             return result;
         }
 
-        private void evaluate()
+        /* Function: calcCost
+         *      Params: none
+         *      Use: improved heuristic of the manhatten distance
+         *              uses sum of the manhattenDistance + # of tiles in the nodes path
+         *      Return: int: heuristic value of the current board
+        */
+        private int calcCost()
         {
-            foreach (Node n in currentBoard)
+            int cost = 0;
+
+            // for each node in the board, calculate the cost it would take to get 
+            //      to its final position
+            foreach (Node cur in currentBoard)
             {
-                // h = distance + # of tiles in the way -- maybe eventually
-                if (n.getValue() != -1 && !n.isAtGoalPosition()) // ignore the * node and nodes that are completed
+                // if the node is the blank, skip the rest of the loop and continue calculation
+                if (cur.getValue() == -1)
                 {
-                    fValue += n.getDistanceToGoal();
-                    Node goalPos = currentBoard.Find(temp => temp.getCurrentPosition() == n.getGoalPosition());
-                    if (goalPos.getValue() != -1)
+                    continue;
+                }
+                Point curPos = cur.getCurrentPosition(); // starting position
+                Point goalPos = cur.getGoalPosition();
+
+                // find path to goal
+                bool isFound = false;
+                while (!isFound)
+                {
+                    // if we are at the goal, then we have found a path
+                    if (curPos == goalPos)
                     {
-                        fValue++;
+                        isFound = true;
+                    }
+                    // if currentPosition is to the left of the goalPosition
+                    else if (curPos.x < goalPos.x)
+                    {
+                        curPos.x++; // move right
+                                    // if node to right is blank, cost increases by only 1
+                        if (getNodeAtPosition(curPos).getValue() == -1)
+                        {
+                            cost++;
+                        }
+                        else // else cost increases by 2 because there was another node there
+                        {
+                            cost += 2;
+                        }
+                    }
+                    // if we are on the same column as the goal, but we are above the goal
+                    else if (curPos.x == goalPos.x && curPos.y < goalPos.y)
+                    {
+                        curPos.y++;
+                        if (getNodeAtPosition(curPos).getValue() == -1)
+                        {
+                            cost++;
+                        }
+                        else
+                        {
+                            cost += 2;
+                        }
+                    }
+                    // if we are to the right of the goalPosition
+                    else if (curPos.x > goalPos.x)
+                    {
+                        curPos.x--;
+                        if (getNodeAtPosition(curPos).getValue() == -1)
+                        {
+                            cost++;
+                        }
+                        else
+                        {
+                            cost += 2;
+                        }
+                    }
+                    // if we are below the goal and in the same column
+                    else if (curPos.y > goalPos.y && curPos.x == goalPos.x)
+                    {
+                        curPos.y--;
+                        if (getNodeAtPosition(curPos).getValue() == -1)
+                        {
+                            cost++;
+                        }
+                        else
+                        {
+                            cost += 2;
+                        }
                     }
                 }
-            }
 
-            hValue = gValue + fValue;
+            }
+            return cost + hValue;
         }
 
-        //private int getTilesInNodePath(Node cur)
-        //{
-        //    int count = 0;
-        //    foreach (Node n in currentBoard)
-        //    {
+        /* Function: getNodeAtPosition
+         *      Params: Point position
+         *      Use: find the node at the passed position
+         *      Return: Node at the position
+        */
+        private Node getNodeAtPosition(Point p)
+        {
+            return currentBoard.Find(x => x.getCurrentPosition() == p);
+        }
 
-        //    }
-        //    return count;
-        //}
-
+        /* Function: getBoard
+         *      Params: none
+         *      Use: getter function for the current board
+         *      Return: List of Nodes that represent the current board
+        */
         public List<Node> getBoard()
         {
             List<Node> temp = new List<Node>();
@@ -122,12 +231,22 @@ namespace TileSliderPuzzle
             return temp;
         }
 
+        /* Function: getHeuristic
+         *      Params: none
+         *      Use: public function to call calcCost
+         *      Return: int
+        */
         public int getHeuristic()
         {
-            //evaluate();
-            return manHattenDist() + gValue;
+            //return manHattenDist();
+            return calcCost();
         }
 
+        /* Function: setGoal
+         *      Params: char array goal
+         *      Use: set the goal position of each node in the current board
+         *      Return: none
+        */
         public void setGoal(char[] goal)
         {
             int index = 0;
@@ -141,7 +260,6 @@ namespace TileSliderPuzzle
                         if (node.getValue() == val)
                         {
                             node.setGoalPosition(col, row);
-                            //Console.WriteLine("found " + node.getValue() + " at: " + row + "," + col);
                         }
                     }
                     index++;
@@ -149,6 +267,11 @@ namespace TileSliderPuzzle
             }
         }
 
+        /* Function: getPossibleMoves
+         *      Params: none
+         *      Use: get the neighbors of the blank node
+         *      Return: Dictionary
+        */
         public Dictionary<Moves, Node> getPossibleMoves()
         {
             Dictionary<Moves, Node> neighbors = new Dictionary<Moves, Node>();
@@ -165,21 +288,11 @@ namespace TileSliderPuzzle
             return neighbors;
         }
 
-        public void displayNeighborStuff()
-        {
-            // testing of getNeighbors
-            foreach (Node n in currentBoard)
-            {
-                Dictionary<Moves, Node> neighbors = new Dictionary<Moves, Node>();
-                neighbors = n.GetNeighbors(currentBoard);
-                foreach (KeyValuePair<Moves, Node> pair in neighbors)
-                {
-                    Console.Write(n.getValue() + ": " + pair.Key + "- " + pair.Value.getValue() + ",  ");
-                }
-                Console.WriteLine();
-            }
-        }
-
+        /* Function: areTheseBoardsEqual
+         *      Params: 2 lists of nodes, a and b
+         *      Use: compare the 2 boards to see if they are equal
+         *      Return: bool: true if they are; false otherwise
+        */
         public bool areTheseBoardsEqual(List<Node> a, List<Node> b)
         {
             for (int row = 0; row < 3; row++)
@@ -202,6 +315,11 @@ namespace TileSliderPuzzle
             return true;
         }
 
+        /* Function: ToString override
+         *      Params: none
+         *      Use: set up the desired string representation of the board
+         *      Return: string
+        */
         public override string ToString()
         {
             string result = " _____________\n";
